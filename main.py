@@ -13,6 +13,8 @@ Embodies Ubuntu principles:
 import os
 import requests
 
+from urllib.parse import urlparse
+
 
 class UbuntuImageFetcher:
     """An image fetcher that embodies ubuntu principles"""
@@ -34,3 +36,21 @@ class UbuntuImageFetcher:
         except OSError as e:
             print(f"X Failed to create directory '{self.directory}': {e}")
             return False
+
+    def validate_url(self, url):
+        """Validating and cleaning URL"""
+        if not url.strip():
+            return None, "URL cannot be empty"
+
+        # Adding protocol if it is missing
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+
+        try:
+            parsed = urlparse(url)
+            if not parsed.netloc:
+                return None, "Invalid URL format"
+            return url, None
+        except ValueError as e:
+            return None, f"URL parsing error: {e}"
+
