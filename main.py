@@ -134,11 +134,11 @@ class UbuntuImageFetcher:
                 name, ext = os.path.splitext(original_filepath)
                 filepath = f"{name}_{counter}{ext}"
                 counter += 1
-            
+
             # Saving image
             with open(filepath, 'wb') as f:
-              f.write(content)
-            
+                f.write(content)
+
             # Add the hash to prevent duplicates
             self.downloaded_hashes.add(content_hash)
 
@@ -165,3 +165,5 @@ class UbuntuImageFetcher:
             return False, f"File save error: {e}"
         except Exception as e:
             return False, f"Unexpected error: {e}"
+
+    
