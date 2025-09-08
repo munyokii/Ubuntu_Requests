@@ -11,9 +11,12 @@ Embodies Ubuntu principles:
 """
 
 import os
+import time
+import mimetypes
+from urllib.parse import urlparse
+
 import requests
 
-from urllib.parse import urlparse
 
 
 class UbuntuImageFetcher:
@@ -54,3 +57,25 @@ class UbuntuImageFetcher:
         except ValueError as e:
             return None, f"URL parsing error: {e}"
 
+    def get_filename_from_url(self, url, content_type=None):
+        """Extracting or generating appropriate filename from URL"""
+        parsed_url = urlparse(url)
+        filename = os.path.basename(parsed_url.path)
+
+        # if no filename in URL, generate one based on content type
+        if not filename or '.' not in filename:
+            timestamp = int(time.time())
+
+            if content_type:
+                # Getting extension from content type
+                extension = mimetypes.guess_extension(content_type.split(';')[0])
+                if extension:
+                    filename = f"image_{timestamp}{extension}"
+                else:
+                    filename = f"image_{timestamp}.jpg"
+            else:
+                filename = f"image_{timestamp}.jpg"
+
+        filename = "".join(c for c in filename if c.isalnum() or c in '.-_')
+
+        return filename
