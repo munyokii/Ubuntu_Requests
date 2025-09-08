@@ -12,6 +12,7 @@ Embodies Ubuntu principles:
 
 import os
 import time
+import hashlib
 import mimetypes
 from urllib.parse import urlparse
 
@@ -94,3 +95,7 @@ class UbuntuImageFetcher:
             return False, "Image too large (>50MB)"
 
         return True, "Safe to download"
+
+    def calculate_content_hash(self, content):
+        """Calculating image hash to detect duplicates"""
+        return hashlib.sha256(content).hexdigest()
