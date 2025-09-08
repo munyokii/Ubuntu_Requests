@@ -113,7 +113,7 @@ class UbuntuImageFetcher:
             is_safe, message = self.check_content_safety(response)
             if not is_safe:
                 return False, f"Safety check failed: {message}"
-            
+
             # Getting content
             content = response.content
 
@@ -121,7 +121,7 @@ class UbuntuImageFetcher:
             content_hash = self.calculate_content_hash(content)
             if content_hash in self.downloaded_hashes:
                 return False, "Duplicate image (already downloaded)"
-            
+
             # Generating filename
             content_type = response.headers.get('content-type')
             filename = self.get_filename_from_url(url, content_type)
@@ -194,3 +194,76 @@ class UbuntuImageFetcher:
                 time.sleep(0.5)
 
         return successful, failed
+
+def main():
+    """Main function implementing the Ubuntu Image Fetcher"""
+    print("Welcome to the Ubuntu Image Fetcher")
+    print("A tool for mindfully collecting images from the web")
+    print("Embodying Ubuntu: 'I am because we are'\n")
+
+    fetcher = UbuntuImageFetcher()
+
+    # Creating a directory
+    if not fetcher.create_directory():
+        return
+
+    while True:
+        print("\nChoose an option:")
+        print("1. Fetch a single image")
+        print("2. Fetch multiple images")
+        print("3. Exit")
+
+        choice = input("\nYour choice (1-3): ").strip()
+
+        if choice == '1':
+            url = input("\nPlease enter the image URL: ").strip()
+
+            if not url:
+                print("No URL provided")
+                continue
+
+            # Validating URL
+            clean_url, error = fetcher.validate_url(url)
+            if error:
+                print(f"{error}")
+                continue
+
+            # Fetching the image
+            success, message = fetcher.fetch_image(clean_url)
+            if success:
+                print("\nConnection strengthened. Community enriched.")
+            else:
+                print(f"Failed to fetch image: {message}")
+                print("Ubuntu teaches us resilience - let's try again.")
+        elif choice == '2':
+            print("\nEnter image URLs (one per line).")
+            print("Enter an empty line when done:")
+
+            urls = []
+            while True:
+                url = input().strip()
+                if not url:
+                    break
+                urls.append(url)
+
+            if not urls:
+                print("No URLs provided")
+                continue
+
+            print(f"\nFetching {len(urls)} images...")
+            successful, failed = fetcher.fetch_multiple_images(urls)
+
+            print("\nSummary:")
+            print(f"Successfully fetched: {successful} images")
+            print(f"Failed: {failed} images")
+            print("Through sharing, we build stronger communities.")
+        elif choice == '3':
+            print("\nThank you for using Ubuntu Image Fetcher")
+            print("May your digital journey be filled with ubuntu - humanity through others")
+            break
+
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+if __name__ == "__main__":
+    main()
