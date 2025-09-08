@@ -166,4 +166,31 @@ class UbuntuImageFetcher:
         except Exception as e:
             return False, f"Unexpected error: {e}"
 
-    
+    def fetch_multiple_images(self, urls):
+        """Fetching multiple images from a list of URLs"""
+        successful = 0
+        failed = 0
+
+        for i, url in enumerate(urls, 1):
+            print(f"\n--- Processing image {i}/{len(urls)} ---")
+
+            # Validating url
+            clean_url, error = self.validate_url(url)
+            if error:
+                print(f"Invalid URL: {error}")
+                failed += 1
+                continue
+
+            # Fetching image
+            success, message = self.fetch_image(clean_url)
+            if success:
+                successful += 1
+            else:
+                print(f"Failed to fetch image: {message}")
+                failed += 1
+
+            # Adding small delays between requests
+            if i < len(urls):
+                time.sleep(0.5)
+
+        return successful, failed
