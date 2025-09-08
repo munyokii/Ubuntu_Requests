@@ -79,3 +79,18 @@ class UbuntuImageFetcher:
         filename = "".join(c for c in filename if c.isalnum() or c in '.-_')
 
         return filename
+
+    def check_content_safety(self, response):
+        """Checking if the response content is safe to download"""
+        content_type = response.headers.get('content-type', '').lower()
+
+        # Checking if its actually an image
+        if not content_type.startswith('image/'):
+            return False, f"Content is not an image (type: {content_type})"
+
+        # Checking content length which limits to 50MB
+        content_length = response.headers.get('content-length')
+        if content_length and int(content_length) > 50 * 1024 * 1024:
+            return False, "Image too large (>50MB)"
+
+        return True, "Safe to download"
