@@ -99,3 +99,69 @@ class UbuntuImageFetcher:
     def calculate_content_hash(self, content):
         """Calculating image hash to detect duplicates"""
         return hashlib.sha256(content).hexdigest()
+
+    def fetch_image(self, url):
+        """Fetching a single image from URL with proper error handling"""
+        print(f"Connecting to: {url}")
+
+        try:
+            # Making requests with timeout and stream for large files
+            response = self.session.get(url, timeout=15, stream=True)
+            response.raise_for_status()
+
+            # Checking content safety
+            is_safe, message = self.check_content_safety(response)
+            if not is_safe:
+                return False, f"Safety check failed: {message}"
+            
+            # Getting content
+            content = response.content
+
+            # Checking for duplicates
+            content_hash = self.calculate_content_hash(content)
+            if content_hash in self.downloaded_hashes:
+                return False, "Duplicate image (already downloaded)"
+            
+            # Generating filename
+            content_type = response.headers.get('content-type')
+            filename = self.get_filename_from_url(url, content_type)
+            filepath = os.path.join(self.directory, filename)
+
+            # Handling filename conflicts
+            counter = 1
+            original_filepath = filepath
+            while os.path.exists(filepath):
+                name, ext = os.path.splitext(original_filepath)
+                filepath = f"{name}_{counter}{ext}"
+                counter += 1
+            
+            # Saving image
+            with open(filepath, 'wb') as f:
+              f.write(content)
+            
+            # Add the hash to prevent duplicates
+            self.downloaded_hashes.add(content_hash)
+
+            file_size = len(content) / 1024
+            print(f"Successfully fetched: {os.path.basename(filepath)}")
+            print(f"Image saved to {filepath} ({file_size:.1f} KB)")
+
+            return True, filepath
+
+        except requests.exceptions.Timeout:
+            return False, "Connection timeout - the server took too long to respond"
+        except requests.exceptions.ConnectionError:
+            return False, "Connection failed - check your internet connection"
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                return False, "Image not found (404)"
+            elif e.response.status_code == 403:
+                return False, "Access forbidden (403) - server rejected the request"
+            else:
+                return False, f"HTTP error {e.response.status_code}"
+        except requests.exceptions.RequestException as e:
+            return False, f"Request error: {e}"
+        except IOError as e:
+            return False, f"File save error: {e}"
+        except Exception as e:
+            return False, f"Unexpected error: {e}"
