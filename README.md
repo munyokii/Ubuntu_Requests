@@ -32,10 +32,10 @@ A program that connects to the global community of the internet, respectfully fe
 ## Requirements
 ### System Requirements
 
-Python: 3.6 or higher
-Operating System: Windows, macOS, or Linux
-Internet Connection: Required for downloading images
-Disk Space: Varies based on images downloaded (default 50MB limit per image)
+- Python: 3.6 or higher
+- Operating System: Windows, macOS, or Linux
+- Internet Connection: Required for downloading images
+- Disk Space: Varies based on images downloaded (default 50MB limit per image)
 
 ## Installation
 
