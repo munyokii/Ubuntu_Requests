@@ -2,7 +2,7 @@
 
 "A person is a person through other persons." - Ubuntu Philosophy
 
-A program that connects to the global community of the internet, respectfully fetches shared resources, and organizes them for later appreciation.
+A program that connects to the global community of the internet, respectfully fetches shared resources, and and download images.
 
 ## ✨ Features
 
